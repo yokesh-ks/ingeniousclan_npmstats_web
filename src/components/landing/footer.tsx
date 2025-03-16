@@ -3,10 +3,21 @@
 import { BackToTop } from "@/src/components/ui/back-to-top";
 import { authorConfig } from "@/config/author";
 import { companyConfig } from "@/config/company";
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const COPYRIGHT_YEAR = new Date().getFullYear();
 
-export function Footer() {
+// Wrapper component that handles the search params
+function FooterContent() {
+  const searchParams = useSearchParams();
+  const isApp = searchParams?.get('isApp') === 'true';
+
+  // Don't render the footer if isApp is true
+  if (isApp) {
+    return null;
+  }
+
   return (
     <>
       <footer id="footer" className="bg-neutral-900 text-white pt-16 pb-8">
@@ -230,6 +241,15 @@ export function Footer() {
       </footer>
       <BackToTop />
     </>
+  );
+}
+
+// Main Footer component with Suspense
+export function Footer() {
+  return (
+    <Suspense fallback={null}>
+      <FooterContent />
+    </Suspense>
   );
 }
 

@@ -1,13 +1,17 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import AppLogo from "@/src/components/atom/logo";
+import { useSearchParams } from 'next/navigation';
 
-export function Header() {
+// Wrapper component that handles the search params
+function HeaderContent() {
+  const searchParams = useSearchParams();
+  const isApp = searchParams?.get('isApp') === 'true';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -19,6 +23,11 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Don't render the header if isApp is true
+  if (isApp) {
+    return null;
+  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -122,6 +131,15 @@ export function Header() {
         </div>
       </nav>
     </header>
+  );
+}
+
+// Main Header component with Suspense
+export function Header() {
+  return (
+    <Suspense fallback={null}>
+      <HeaderContent />
+    </Suspense>
   );
 }
 
